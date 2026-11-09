@@ -4,6 +4,8 @@
 
 A chat app for models running locally with Ollama, built with Vite, React, TypeScript and plain CSS.
 
+Zuzo is the chat app, Ollama is the program that runs the AI, and gemma3:1b is the AI model that writes the answer.
+
 ## Run it
 
 ```bash
