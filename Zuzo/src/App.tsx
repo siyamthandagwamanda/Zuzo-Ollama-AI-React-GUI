@@ -1,10 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { generate } from './ollama'
-
-type Message = {
-  role: 'user' | 'assistant'
-  content: string
-}
+import type { Message } from './types'
 
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -22,7 +18,7 @@ export default function App() {
 
   try {
     const reply = await generate(history[history.length - 1].content)
-    setMessages([...history, { role: 'assistant', content: reply }])
+    setMessages([...history, reply])
   } catch (error) {
     alert(error instanceof Error ? error.message : 'The reply failed.')
   } finally {
@@ -35,10 +31,18 @@ export default function App() {
       <h1>Zuzo</h1>
 
       {messages.map((message, index) => (
-        <p key={index}>
-          {message.role}: {message.content}
-        </p>
-      ))}
+       <div key={index}>
+            <p>
+              {message.role}: {message.content}
+            </p>
+
+                {message.role === 'assistant' && (
+            <small>
+            {message.duration?.toFixed(1)} s, {message.tokensPerSecond?.toFixed(1)} tokens/sec
+            </small>
+          )}
+        </div>
+       ))}
 
       {waiting && (
         <p role="status">
