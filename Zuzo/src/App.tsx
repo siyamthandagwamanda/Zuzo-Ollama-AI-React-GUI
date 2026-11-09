@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { generate } from './ollama'
 
 type Message = {
   role: 'user' | 'assistant'
@@ -9,13 +10,21 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
 
-  function send(event: FormEvent) {
-    event.preventDefault()
-    if (!input.trim()) return
+  async function send(event: FormEvent) {
+  event.preventDefault()
+  if (!input.trim()) return
 
-    setMessages([...messages, { role: 'user', content: input.trim() }])
-    setInput('')
+  const history: Message[] = [...messages, { role: 'user', content: input.trim() }]
+  setMessages(history)
+  setInput('')
+
+  try {
+    const reply = await generate(history[history.length - 1].content)
+    setMessages([...history, { role: 'assistant', content: reply }])
+  } catch (error) {
+    alert(error instanceof Error ? error.message : 'The reply failed.')
   }
+}
 
   return (
     <main>
